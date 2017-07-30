@@ -13,13 +13,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(112, 220, 165)'
     },
     menuButton: {
-        width: Dimensions.get('window').width,
         height: 50,
+        position: 'relative',
+        width: Dimensions.get('window').width,
         backgroundColor: 'rgb(98, 196, 143)'
     },
-    buttonTitle: {
-        lineHeight: 50,
-        textAlign: 'center'
+    title: {
+        fontSize: 30,
+        fontFamily: 'Avenir',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: 'rgba(0, 0, 0, 0.45)'
     }
 });
 
@@ -39,24 +43,38 @@ export default class Sidebar extends React.Component {
     render() {
         return (
             <View style={styles.sidebar}>
-                <Button title='Bulletin' color='black' onPress={() => {
-                    this.changePage(0);    
-                }} />
-                <Button title='Messaging' color='black' onPress={() => {
-                    this.changePage(1);
-                }}/>
-                <Button title='To-Do (Personal)' color='black' onPress={() => {
-                    this.changePage(2);
-                }} />
-                <Button title='To-Do (Shared)' color='black' onPress={() => {
-                    this.changePage(3);
-                }} />
-                <Button title='Lights' color='black' onPress={() => {
-                    this.changePage(4);
-                }} />
-                <Button title='Account' color='black' onPress={() => {
-                    this.changePage(4);
-                }} />
+                <Text style={styles.title}>Dashboard</Text>
+                
+                <View style={styles.menuButton}>
+                    <Button title='Bulletin' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(0);    
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='Messaging' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(1);
+                    }}/>
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='To-Do (Personal)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(2);
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='To-Do (Shared)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(3);
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='Lights' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(4);
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='Account' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(5);
+                    }} />
+                </View>
             </View>
         );
     }
