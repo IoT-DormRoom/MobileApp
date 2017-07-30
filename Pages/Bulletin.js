@@ -1,6 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
-import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
+        TouchableHighlight, Alert, Modal, TextInput } from 'react-native';
 
 import Page from './Page';
 
@@ -9,7 +10,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
-        backgroundColor: 'rgb(188, 139, 75)'
+        backgroundColor: 'rgb(188, 139, 75)',
     },
     title: {
         top:20,
@@ -21,9 +22,11 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
 
+
+    // The list view
     list: {
-        top: Dimensions.get('window').height / 24,
-        marginBottom: Dimensions.get('window').height / 24
+        top: Dimensions.get('window').height / 12,
+        marginBottom: Dimensions.get('window').height / 12
     },
     cell: {
         left: 25,
@@ -55,6 +58,90 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '90%',
         backgroundColor: 'rgb(107, 187, 214)'
+    },
+
+
+    // The upload button
+    uploadButtonView: {
+        width: Dimensions.get('window').width - 20,
+        top: Dimensions.get('window').height / 22,
+        left: 10,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgb(153, 96, 36)'
+    },
+    uploadButton: {
+        fontSize: 35,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        textAlign: 'center',
+        color: 'rgba(0, 0, 0, 0.35)',
+    },
+
+
+    // Upload modals
+    messageUploadTitle: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        textAlign: 'center',
+        color: 'rgba(0,0,0,0.5)',
+        top: Dimensions.get('screen').height / 20
+    },
+    textInput: {
+        top: Dimensions.get('window').height / 15,
+        width: Dimensions.get('window').width - 20,
+        height: 300,
+        fontSize: 18,
+        fontFamily: 'Avenir',
+        borderColor: 'black',
+        borderWidth: 1,
+        backgroundColor: 'lightgray'
+    },
+    submitButtonArea: {
+        top: Dimensions.get('window').height / 10,
+        width: 200,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightblue'
+    },
+    cancelButtonArea: {
+        top: Dimensions.get('window').height / 8,
+        width: 200,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'red'
+    },
+    button: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir'
+    },
+    uploadLabel: {
+        top: Dimensions.get('window').height / 18,
+        fontSize: 18,
+        color: 'black',
+        fontWeight: 'bold',
+        fontFamily: 'Avenir'
+    },
+    orLinkLabel: {
+        top: Dimensions.get('window').height / 14,
+        fontSize: 18,
+        color: 'black',
+        fontWeight: 'bold',
+        fontFamily: 'Avenir'
+    },
+    linkField: {
+        top: Dimensions.get('window').height / 10,
+        width: Dimensions.get('window').width - 20,
+        fontSize: 18,
+        fontFamily: 'Avenir',
+        borderColor: 'black',
+        borderWidth: 1,
+        textAlign: 'center'
     }
 });
 
@@ -67,7 +154,13 @@ export default class Bulletin extends Page {
     constructor() {
         super();
         this.state = {
-            posts: []
+            posts: [],
+            messageOpen: false,
+            photoOpen: false,
+            linkOpen: false,
+            
+            inputText: '',
+            linkText: ''
         }
     }
 
@@ -90,12 +183,106 @@ export default class Bulletin extends Page {
             <View style={styles.pageStyles}>
                 <Text style={styles.title}>Bulletin</Text>
 
+                <TouchableHighlight onPress={this.openUploadDialog.bind(this)} 
+                                    underlayColor="rgba(0,0,0,0)">
+					<View style={styles.uploadButtonView}>
+						<Text style={styles.uploadButton}>
+							+
+						</Text>
+					</View>
+				</TouchableHighlight>
+
                 <FlatList style={styles.list}
                         data={this.state.posts} 
                         renderItem={this.bulletinCell}/>
+
+
+
+                {/* Message Dialog. */}
+                <Modal animationType={"slide"} transparent={false} visible={this.state.messageOpen} onRequestClose={() => {}}>
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        {/* The title of the modal. */}
+                        <Text style={styles.messageUploadTitle}>Upload Message</Text>
+
+                        {/* The input field for typing the message. */}
+                        <TextInput ref={(TextInput)=> this._messageInput = TextInput}
+                            style={styles.textInput}
+                            autoCorrect={false}
+                            multiline={true}
+                            onChangeText={(text) => this.setState({ inputText: text }) }
+                            placeholder='Enter the message you want to send here' />
+
+                        {this.submitCancelComponent}
+                    </View>
+                </Modal>
+
+                {/* Photo/GIF Dialog. */}
+                <Modal animationType={"slide"} transparent={false} visible={this.state.photoOpen} onRequestClose={() => {}}>
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        {/* The title of the modal. */}
+                        <Text style={styles.messageUploadTitle}>Upload Photo/GIF</Text>
+
+                        <Text style={ styles.uploadLabel }>
+                            Upload from file:
+                        </Text>
+
+
+                        <Text style={ styles.orLinkLabel }>
+                            Or paste the link to the photo/gif below:
+                        </Text>
+                        <TextInput ref={(TextInput)=> this._photoLinkField = TextInput}
+                            style={styles.linkField}
+                            autoCorrect={false}
+                            multiline={false}
+                            onChangeText={(text) => this.setState({ linkText: text }) }
+                            placeholder='URL' />
+                        <Text>{'\n\n\n'}</Text>
+
+                        {this.submitCancelComponent}
+                    </View>
+                </Modal>
+
+                {/* Link Dialog. */}
+                <Modal animationType={"slide"} transparent={false} visible={this.state.linkOpen} onRequestClose={() => {}}>
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        {/* The title of the modal. */}
+                        <Text style={styles.messageUploadTitle}>Upload Link</Text>
+
+                        
+
+                        {this.submitCancelComponent}
+                    </View>
+                </Modal>
             </View>
         );
     }
+
+
+    /********************
+    *       UPLOAD      *
+    *********************/
+
+    /** Opens the upload dialog. */
+    openUploadDialog() {
+        Alert.alert(
+            'Upload Bulletin Post',
+            'What kind of bulletin post are you making?',
+            [
+                {text: 'Message', onPress: () => this.setState({ messageOpen: true })},
+                {text: 'Photo/GIF', onPress: () => this.setState({ photoOpen: true })},
+                {text: 'Link', onPress: () => this.setState({ linkOpen: true })},
+                {text: 'Cancel', onPress: () => {}, style: 'cancel'}
+            ],
+            { cancelable: true }
+        );
+    }
+
+    /** Submits the bulletin post. */
+    submitBulletinPost() {
+        
+    }
+
+
 
 
     /********************
@@ -134,7 +321,9 @@ export default class Bulletin extends Page {
 
 
 
-
+    /********************
+    *       OTHER       *
+    *********************/
 
     /** What should be rendered in the list view cell for the bulletin page. */
     bulletinCell = ({item}) => {
@@ -145,8 +334,6 @@ export default class Bulletin extends Page {
             </View>
         )
     }
-
-
 
     /** Bulletin cell content, whether it is text, and image, gif, etc. */
     getBulletinCellContent(item) {
@@ -171,5 +358,25 @@ export default class Bulletin extends Page {
             return <Text style={styles.contentText}>{item.content.substring(0,80)}...</Text>
         }
     }
+
+
+
+    /** The components for the submit and cancel buttons. */
+    submitCancelComponent = <View>
+        <TouchableHighlight onPress={this.submitBulletinPost.bind(this)} underlayColor="rgba(0,0,0,0)">
+            <View style={styles.submitButtonArea}>
+                <Text style={styles.button}>
+                    Submit
+                </Text>
+            </View>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={() => this.setState({ messageOpen: false, photoOpen: false, linkOpen: false })} underlayColor="rgba(0,0,0,0)">
+            <View style={styles.cancelButtonArea}>
+                <Text style={styles.button}>
+                    Cancel
+                </Text>
+            </View>
+        </TouchableHighlight>
+    </View>
     
 }
