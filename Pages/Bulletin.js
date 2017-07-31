@@ -1,6 +1,6 @@
 import React from 'react';
 import * as firebase from 'firebase';
-var ImagePicker = require('react-native-image-picker');
+import imagePicker from 'react-native-imagepicker';
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput } from 'react-native';
 
@@ -165,14 +165,12 @@ const styles = StyleSheet.create({
     }
 });
 
-// IMAGE PICKER OPTIONS
-var imgPickerOptions = {
-  title: 'Upload Photo',
-  customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'},],
-  storageOptions: {
-    skipBackup: true,
-    path: 'images'
-  }
+
+/** Helper method for selecting the uri from the image picker. */
+var selectedURI = null;
+const selectURI = (uri) => {
+    styles.selectPhotoBtn['backgroundColor'] = 'lightgreen';
+    selectedURI = uri;
 };
 
 
@@ -192,8 +190,7 @@ export default class Bulletin extends Page {
             
             titleText: '',
             inputText: '',
-            linkText: '',
-            selectedImage: null
+            linkText: ''
         }
     }
 
@@ -384,25 +381,51 @@ export default class Bulletin extends Page {
         // Photo
         else if(this.state.photoOpen) {
             var url = this.state.linkText;
-            //var image = this.state.chosenFile;
+            var image = selectedURI;
             var databasePath = firebase.database().ref().child('Bulletin').push();
 
             if(title != '') {
-                // Set the database path.
-                databasePath.set({
-                    "uploader":store.currentUser.uid,
-                    "content": url,
-                    "type":"photo",
-                    "uploadDate":Date.now(),
-                    "title":title,
-                    "xCoord": this.randomCoordinate().x,
-                    "yCoord": this.randomCoordinate().y,
-                    "rotation":0,
-                    "id":databasePath.key,
-                    "read":false
-                }).then( () => {
-                    window.location.reload(true);
-                });
+                if(image !== null) {
+                    
+                    return;
+
+                    var uploadTask = firebase.storage().ref().child('images').child(databasePath.key).putString(image, 'data_url').then( (snap) => {
+                        // Set the database path.
+                        databasePath.set({
+                            "uploader":store.currentUser.uid,
+                            "content": url,
+                            "type":"photo",
+                            "uploadDate":Date.now(),
+                            "title":title,
+                            "xCoord": this.randomCoordinate().x,
+                            "yCoord": this.randomCoordinate().y,
+                            "rotation":0,
+                            "id":databasePath.key,
+                            "read":false
+                        }).then( () => {
+                            window.location.reload(true);
+                        });
+                    });
+                    return;
+
+                } else {
+                    // Set the database path.
+                    databasePath.set({
+                        "uploader":store.currentUser.uid,
+                        "content": url,
+                        "type":"photo",
+                        "uploadDate":Date.now(),
+                        "title":title,
+                        "xCoord": this.randomCoordinate().x,
+                        "yCoord": this.randomCoordinate().y,
+                        "rotation":0,
+                        "id":databasePath.key,
+                        "read":false
+                    }).then( () => {
+                        window.location.reload(true);
+                    });
+                    return;
+                }
             }
             // Otherwise, show error alert.
             else {
@@ -448,36 +471,27 @@ export default class Bulletin extends Page {
 
     /** Shows the image picker. */
     openImagePicker() {
-        ImagePicker.showImagePicker(imgPickerOptions, (response) => {
-            console.log('Opened image picker');
-            if (response.didCancel) {
-                console.log('Canceled');
-                return;
-            }
-            else if (response.error) {
-                console.log('Error');
-                Alert.alert('Error selecting image', 'There was an issue selecting your image',
-                    [{name:'Close', onPress: () => {}}]
-                );
-                return;
-            }
-            else if (response.customButton) {
-                console.log('Custom button');
-                return;
-            }
-            else {
-                let source = { uri: response.uri };
+        imagePicker.open({
+            takePhoto: false,
+            useLastPhoto: false,
+            chooseFromLibrary: true
+        }).then( ({ uri, width, height }) => {
+            
+            Alert.alert('Image Select Success', 'Image has been selected successfully.',
+                [{text:'Ok', onPress: () => {}, style:'cancel'}],
+                { cancelable: true }
+            );
+            selectURI(uri);
+            return;
 
-                // You can also display the image using data:
-                // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-                this.setState({
-                    selectedImage: source
-                });
-            }
+        }, (error) => {
+            Alert.alert('Image Select Error', 'There was an issue picking your image.',
+                [{text: 'Close', onPress: () => {}, style:'cancel'}],
+                { cancelable: true }
+            );
+            return;
         });
     }
-
 
 
 
