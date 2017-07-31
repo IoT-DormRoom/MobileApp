@@ -1,10 +1,12 @@
 import React from 'react';
 import * as firebase from 'firebase';
+var ImagePicker = require('react-native-image-picker');
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput } from 'react-native';
 
 import Page from './Page';
 
+//STYLES
 const styles = StyleSheet.create({
     pageStyles: {
         position: 'absolute',
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
         top: Dimensions.get('screen').height / 20
     },
     textInput: {
-        top: Dimensions.get('window').height / 15,
+        top: Dimensions.get('window').height / 14,
         width: Dimensions.get('window').width - 20,
         height: 300,
         fontSize: 18,
@@ -121,29 +123,58 @@ const styles = StyleSheet.create({
         fontFamily: 'Avenir'
     },
     uploadLabel: {
-        top: Dimensions.get('window').height / 18,
+        top: Dimensions.get('window').height / 12,
         fontSize: 18,
         color: 'black',
         fontWeight: 'bold',
         fontFamily: 'Avenir'
     },
     orLinkLabel: {
-        top: Dimensions.get('window').height / 14,
+        top: Dimensions.get('window').height / 8,
         fontSize: 18,
         color: 'black',
         fontWeight: 'bold',
         fontFamily: 'Avenir'
     },
     linkField: {
-        top: Dimensions.get('window').height / 10,
+        top: Dimensions.get('window').height / 7,
         width: Dimensions.get('window').width - 20,
         fontSize: 18,
         fontFamily: 'Avenir',
         borderColor: 'black',
         borderWidth: 1,
         textAlign: 'center'
+    },
+    titleField: {
+        top: Dimensions.get('window').height / 17,
+        width: Dimensions.get('window').width - 20,
+        fontSize: 18,
+        fontFamily: 'Avenir',
+        borderColor: 'black',
+        borderWidth: 1,
+        textAlign: 'center'
+    },
+    selectPhotoBtn: {
+        top: Dimensions.get('window').height / 10,
+        width: 200,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightcoral',
+        marginBottom: 20
     }
 });
+
+// IMAGE PICKER OPTIONS
+var imgPickerOptions = {
+  title: 'Upload Photo',
+  customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'},],
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+};
+
 
 export default class Bulletin extends Page {
 
@@ -159,8 +190,10 @@ export default class Bulletin extends Page {
             photoOpen: false,
             linkOpen: false,
             
+            titleText: '',
             inputText: '',
-            linkText: ''
+            linkText: '',
+            selectedImage: null
         }
     }
 
@@ -203,6 +236,13 @@ export default class Bulletin extends Page {
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         {/* The title of the modal. */}
                         <Text style={styles.messageUploadTitle}>Upload Message</Text>
+                        
+                        <TextInput ref={(TextInput)=> this._titleField = TextInput}
+                            style={styles.titleField}
+                            autoCorrect={false}
+                            multiline={false}
+                            onChangeText={(text) => this.setState({ titleText: text }) }
+                            placeholder='Title' />
 
                         {/* The input field for typing the message. */}
                         <TextInput ref={(TextInput)=> this._messageInput = TextInput}
@@ -222,9 +262,23 @@ export default class Bulletin extends Page {
                         {/* The title of the modal. */}
                         <Text style={styles.messageUploadTitle}>Upload Photo/GIF</Text>
 
+                        <TextInput ref={(TextInput)=> this._titleField = TextInput}
+                            style={styles.titleField}
+                            autoCorrect={false}
+                            multiline={false}
+                            onChangeText={(text) => this.setState({ titleText: text }) }
+                            placeholder='Title' />
+
                         <Text style={ styles.uploadLabel }>
                             Upload from file:
                         </Text>
+                        <TouchableHighlight onPress={this.openImagePicker} underlayColor="rgba(0,0,0,0)">
+                            <View style={styles.selectPhotoBtn}>
+                                <Text style={styles.button}>
+                                    Choose Photo
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
 
 
                         <Text style={ styles.orLinkLabel }>
@@ -248,7 +302,23 @@ export default class Bulletin extends Page {
                         {/* The title of the modal. */}
                         <Text style={styles.messageUploadTitle}>Upload Link</Text>
 
+                        <TextInput ref={(TextInput)=> this._titleField = TextInput}
+                            style={styles.titleField}
+                            autoCorrect={false}
+                            multiline={false}
+                            onChangeText={(text) => this.setState({ titleText: text }) }
+                            placeholder='Title' />
                         
+                        <Text style={ styles.orLinkLabel }>
+                            Paste the link below:
+                        </Text>
+                        <TextInput ref={(TextInput)=> this._linkLinkField = TextInput}
+                            style={styles.linkField}
+                            autoCorrect={false}
+                            multiline={false}
+                            onChangeText={(text) => this.setState({ linkText: text }) }
+                            placeholder='URL' />
+                        <Text>{'\n\n\n'}</Text>
 
                         {this.submitCancelComponent}
                     </View>
@@ -279,7 +349,133 @@ export default class Bulletin extends Page {
 
     /** Submits the bulletin post. */
     submitBulletinPost() {
-        
+        const store = this.props.rStore.getState();
+        var title = this.state.titleText;
+
+        // Message
+        if(this.state.messageOpen) {
+            var message = this.state.inputText;
+            
+            if(message != '' && title != '') {
+
+                // Set the data in firebase.
+                var path = firebase.database().ref().child('Bulletin').push()
+                path.set({
+                    "uploader":store.currentUser.uid,
+                    "content":message,
+                    "type":"message",
+                    "uploadDate":Date.now(),
+                    "title":title,
+                    "xCoord": this.randomCoordinate().x,
+                    "yCoord": this.randomCoordinate().y,
+                    "rotation": 0,
+                    "id":path.key,
+                    "read":false
+                }).then( () => {
+                    window.location.reload(true);
+                });
+            } else {
+                Alert.alert('Missing Information', 'Please enter all information before submitting.',
+                    [{text: 'Close', onPress: () => {}, style:'cancel'}]
+                );
+                return;
+            }
+        }
+        // Photo
+        else if(this.state.photoOpen) {
+            var url = this.state.linkText;
+            //var image = this.state.chosenFile;
+            var databasePath = firebase.database().ref().child('Bulletin').push();
+
+            if(title != '') {
+                // Set the database path.
+                databasePath.set({
+                    "uploader":store.currentUser.uid,
+                    "content": url,
+                    "type":"photo",
+                    "uploadDate":Date.now(),
+                    "title":title,
+                    "xCoord": this.randomCoordinate().x,
+                    "yCoord": this.randomCoordinate().y,
+                    "rotation":0,
+                    "id":databasePath.key,
+                    "read":false
+                }).then( () => {
+                    window.location.reload(true);
+                });
+            }
+            // Otherwise, show error alert.
+            else {
+                Alert.alert('Missing Information', 'Please enter all information before submitting.',
+                    [{text: 'Close', onPress: () => {}, style:'cancel'}]
+                );
+                return;
+            }
+        }
+        // Link
+        else if(this.state.linkOpen) {
+            var url = this.state.linkText;
+
+            if(url != '' && title != '') {
+
+                // Set the data in firebase.
+                var path = firebase.database().ref().child('Bulletin').push()
+                path.set({
+                    "uploader":store.currentUser.uid,
+                    "content":url,
+                    "type":"link",
+                    "uploadDate":Date.now(),
+                    "title":title,
+                    "xCoord": this.randomCoordinate().x,
+                    "yCoord": this.randomCoordinate().y,
+                    "rotation":0,
+                    "id":path.key,
+                    "read":false
+                }).then( () => {
+                    window.location.reload(true);
+                });
+            } else {
+                Alert.alert('Missing Information', 'Please enter all information before submitting.',
+                    [{text: 'Close', onPress: () => {}, style:'cancel'}]
+                );
+                return;
+            }
+        }
+
+        this.setState({ messageOpen: false, photoOpen: false, linkOpen: false });
+    }
+
+
+    /** Shows the image picker. */
+    openImagePicker() {
+        ImagePicker.showImagePicker(imgPickerOptions, (response) => {
+            console.log('Opened image picker');
+            if (response.didCancel) {
+                console.log('Canceled');
+                return;
+            }
+            else if (response.error) {
+                console.log('Error');
+                Alert.alert('Error selecting image', 'There was an issue selecting your image',
+                    [{name:'Close', onPress: () => {}}]
+                );
+                return;
+            }
+            else if (response.customButton) {
+                console.log('Custom button');
+                return;
+            }
+            else {
+                let source = { uri: response.uri };
+
+                // You can also display the image using data:
+                // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({
+                    selectedImage: source
+                });
+            }
+        });
     }
 
 
@@ -359,6 +555,18 @@ export default class Bulletin extends Page {
         }
     }
 
+
+    /** Returns a random coordinate to place a bulletin post. */
+    randomCoordinate = () => {
+        var maxX = 700;
+        var maxY = 1000;
+
+        var randX = Math.floor((Math.random() * maxX) + 1);
+        var randY = Math.floor((Math.random() * maxY) + 1);
+
+        return {x: randX, y: randY};
+    }
+    
 
 
     /** The components for the submit and cancel buttons. */

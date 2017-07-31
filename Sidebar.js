@@ -85,6 +85,15 @@ export default class Sidebar extends React.Component {
     *********************/
 
     changePage(i) {
+        if(i === 5) {
+            if(this.props.rStore.getState().currentUser === null) {
+                this.props.rStore.dispatch({
+                    type: 'CHANGE_PAGE',
+                    index: 6
+                });
+                return;
+            }
+        }
         this.props.rStore.dispatch({
             type: 'CHANGE_PAGE',
             index: i

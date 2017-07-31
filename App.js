@@ -32,15 +32,16 @@ firebase.initializeApp(config);
 /**
  * REDUX
  */
+var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, <TodoShared/>, <Lights/>, <Account/>, <Login />, <SignUp /> ];
 const defaultState = {
 	currentPage: <Bulletin />,
-	pages: [<Bulletin />, <Messaging />, <TodoPersonal/>, <TodoShared/>, <Lights/>, <Account/> ],
-	drawerOpen: false
+	drawerOpen: false,
+	currentUser: null
 }
 const sidebar = (state = defaultState, action) => {
     switch (action.type) {
         case 'CHANGE_PAGE':
-			state.currentPage = state.pages[action.index];
+			state.currentPage = pages[action.index];
 			state.drawerOpen = false;
 			break;
 		case 'OPEN_SIDEBAR':
@@ -49,6 +50,14 @@ const sidebar = (state = defaultState, action) => {
 		case 'CLOSE_SIDEBAR':
 			state.drawerOpen = false;
 			break;
+		case 'LOGIN':
+			state.currentUser = action.currentUser;
+			state.currentPage = pages[5];
+			break;
+		case 'LOGOUT':
+			state.currentUser = null;
+			state.currentPage = pages[6];
+			break;
 
         default: break;
     }
@@ -56,7 +65,10 @@ const sidebar = (state = defaultState, action) => {
     return state;
 };
 const store = createStore(sidebar);
-
+pages = [<Bulletin rStore={store} />, <Messaging rStore={store} />, 
+		<TodoPersonal rStore={store} />, <TodoShared rStore={store} />,
+		<Lights rStore={store} />, <Account rStore={store} />, 
+		<Login rStore={store} />, <SignUp rStore={store} /> ];
 
 /**
  * NAVIGATION DRAWER
@@ -95,15 +107,47 @@ const drawerProps = ({
 	}
 });
 
+
+
 export default class App extends React.Component {
 
 	/********************
     *   INITIALIZATION  *
     *********************/
 
+	constructor() {
+		super();
+		this.handleAutoLogin(() => {
+			store.dispatch({
+				type: 'CHANGE_PAGE',
+				index: 0
+			});
+		});
+	}
+
+
 	componentDidMount() {
 		store.subscribe(() => this.forceUpdate() );
 	}
+
+	handleAutoLogin(callback) {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                firebase.database().ref().child('Users').child(user.uid).once('value', (snap) => {
+                    var usr = snap.val();
+                
+                    store.dispatch({
+                        type:'LOGIN',
+                        currentUser: usr
+                    });
+                    
+                    if(callback) { callback(); }
+                })
+            } else {
+                return;
+            }
+        });
+    }
 
 
 

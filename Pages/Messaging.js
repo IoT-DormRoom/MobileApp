@@ -184,9 +184,9 @@ export default class Messaging extends Page {
 
     /** Handles sending a message through the database. */
     sendMessage() {
-        // const store = this.props.rStore.getState();
-        // const cUser = store.currentUser;
-        // if(cUser === null || cUser === undefined) { return; }
+        const store = this.props.rStore.getState();
+        const cUser = store.currentUser;
+        if(cUser === null || cUser === undefined) { return; }
 
         // // Get the message from the input field.
         var message = this.state.inputText;
@@ -197,8 +197,7 @@ export default class Messaging extends Page {
                 "id":ref.key,
                 "content":message,
                 "timestamp":Date.now(),
-                "senderName":'Adeola Uthman'
-                //"senderName":cUser.firstName + " " + cUser.lastName
+                "senderName":cUser.firstName + " " + cUser.lastName
             });
 
             // Clear the input field.
