@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
 
@@ -32,12 +31,11 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     button: {
-        top: 50,
         left: Dimensions.get('window').width / 2 - 50,
         width: 100,
         height: 50,
+        marginTop: 15,
         borderRadius: 20,
-        marginBottom: 10,
         alignContent: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)'
@@ -46,7 +44,6 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         fontSize: 18,
-        fontFamily: 'Avenir'
     }
 });
 
@@ -97,17 +94,19 @@ export default class Account extends Page {
                             caretHidden={true}
                             onChangeText={(text) => this.setState({ passwordConfirmText: text }) }
                             placeholder='Re-enter your new password' />
-
-                <TouchableHighlight onPress={this.handleSaveChanges.bind(this)} underlayColor='rgba(0,0,0,0)'>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonTitle}>Save Changes</Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={this.handleLogout.bind(this)} underlayColor='rgba(0,0,0,0)'>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonTitle}>Logout</Text>
-                    </View>
-                </TouchableHighlight>
+                
+                <View style={{marginTop: 35}}>
+                    <TouchableHighlight onPress={this.handleSaveChanges.bind(this)} underlayColor='rgba(0,0,0,0)'>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonTitle}>Save Changes</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={this.handleLogout.bind(this)} underlayColor='rgba(0,0,0,0)'>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonTitle}>Logout</Text>
+                        </View>
+                    </TouchableHighlight>
+                </View>
             </View>
         );
     }

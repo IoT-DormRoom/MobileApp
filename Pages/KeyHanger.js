@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     }
 });

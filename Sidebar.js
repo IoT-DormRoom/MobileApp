@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 30,
-        fontFamily: 'Avenir',
         fontWeight: 'bold',
         textAlign: 'center',
         color: 'rgba(0, 0, 0, 0.45)'
@@ -90,7 +89,7 @@ export default class Sidebar extends React.Component {
     *********************/
 
     changePage(i) {
-        if(i === 5) {
+        if(i === 6) {
             if(this.props.rStore.getState().currentUser === null) {
                 this.props.rStore.dispatch({
                     type: 'CHANGE_PAGE',

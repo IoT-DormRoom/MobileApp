@@ -53,11 +53,11 @@ const sidebar = (state = defaultState, action) => {
 			break;
 		case 'LOGIN':
 			state.currentUser = action.currentUser;
-			state.currentPage = pages[5];
+			state.currentPage = pages[6];
 			break;
 		case 'LOGOUT':
 			state.currentUser = null;
-			state.currentPage = pages[6];
+			state.currentPage = pages[7];
 			break;
 
         default: break;
@@ -66,6 +66,7 @@ const sidebar = (state = defaultState, action) => {
     return state;
 };
 const store = createStore(sidebar);
+defaultState.currentPage = <Bulletin rStore={store} />
 pages = [<Bulletin rStore={store} />, <Messaging rStore={store} />, 
 		<TodoPersonal rStore={store} />, <TodoShared rStore={store} />,
 		<Lights rStore={store} />, <KeyHanger rStore={store} />, 

@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
     listView: {
@@ -37,12 +36,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 25,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
+        paddingRight: 10
     },
     cellButton: {
         fontSize: 25,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     }
 });
 

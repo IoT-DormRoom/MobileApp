@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import imagePicker from 'react-native-imagepicker';
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput, TouchableWithoutFeedback,
-        Linking } from 'react-native';
+        Linking, Platform } from 'react-native';
 
 import Page from './Page';
 
@@ -21,15 +21,14 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
 
 
     // The list view
     list: {
-        top: Dimensions.get('window').height / 12,
-        marginBottom: Dimensions.get('window').height / 12
+        marginTop: 10,
+        marginBottom: 10
     },
     cell: {
         left: 25,
@@ -41,7 +40,6 @@ const styles = StyleSheet.create({
     cellTitle: {
         fontSize: 22,
         color: 'black',
-        fontFamily: 'Avenir',
         textAlign: 'center'
     },
     contentText: {
@@ -49,7 +47,6 @@ const styles = StyleSheet.create({
         height: '90%',
         textAlign: 'center',
         fontSize: 20,
-        fontFamily: 'Avenir',
         backgroundColor: 'rgb(107, 187, 214)'
     },
     contentImage: {
@@ -67,7 +64,7 @@ const styles = StyleSheet.create({
     // The upload button
     uploadButtonView: {
         width: Dimensions.get('window').width - 20,
-        top: Dimensions.get('window').height / 22,
+        marginTop: 35,
         left: 10,
         height: 50,
         justifyContent: 'center',
@@ -77,7 +74,6 @@ const styles = StyleSheet.create({
     uploadButton: {
         fontSize: 35,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center',
         color: 'rgba(0, 0, 0, 0.35)',
     },
@@ -87,23 +83,21 @@ const styles = StyleSheet.create({
     messageUploadTitle: {
         fontSize: 25,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center',
         color: 'rgba(0,0,0,0.5)',
-        top: Dimensions.get('screen').height / 20
+        marginTop: Dimensions.get('screen').height / 20
     },
     textInput: {
-        top: Dimensions.get('window').height / 14,
         width: Dimensions.get('window').width - 20,
-        height: 300,
+        height: Dimensions.get('window').height / 2,
         fontSize: 18,
-        fontFamily: 'Avenir',
         borderColor: 'black',
         borderWidth: 1,
-        backgroundColor: 'lightgray'
+        color: 'black',
+        backgroundColor: 'white'
     },
     submitButtonArea: {
-        top: Dimensions.get('window').height / 10,
+        marginTop: 20,
         width: 200,
         height: 50,
         alignItems: 'center',
@@ -111,7 +105,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightblue'
     },
     cancelButtonArea: {
-        top: Dimensions.get('window').height / 8,
         width: 200,
         height: 50,
         alignItems: 'center',
@@ -121,42 +114,39 @@ const styles = StyleSheet.create({
     button: {
         fontSize: 20,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     },
     uploadLabel: {
-        top: Dimensions.get('window').height / 12,
+        marginTop: Dimensions.get('window').height / 12,
         fontSize: 18,
         color: 'black',
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     },
     orLinkLabel: {
         top: Dimensions.get('window').height / 8,
         fontSize: 18,
         color: 'black',
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     },
     linkField: {
-        top: Dimensions.get('window').height / 7,
+        marginTop: Dimensions.get('window').height / 7,
         width: Dimensions.get('window').width - 20,
         fontSize: 18,
-        fontFamily: 'Avenir',
         borderColor: 'black',
         borderWidth: 1,
+        height: 40,
+        marginBottom: -40,
         textAlign: 'center'
     },
     titleField: {
-        top: Dimensions.get('window').height / 17,
+        marginTop: 5,
         width: Dimensions.get('window').width - 20,
+        height: 40,
         fontSize: 18,
-        fontFamily: 'Avenir',
         borderColor: 'black',
         borderWidth: 1,
         textAlign: 'center'
     },
     selectPhotoBtn: {
-        top: Dimensions.get('window').height / 10,
         width: 200,
         height: 50,
         alignItems: 'center',
@@ -167,8 +157,7 @@ const styles = StyleSheet.create({
 
     deleteButton: {
         width: 200,
-        height: 50,
-        marginTop: 10,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'red'
@@ -184,7 +173,6 @@ const styles = StyleSheet.create({
     detailTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center',
         marginTop: 15,
         width: Dimensions.get('window').width
@@ -192,7 +180,6 @@ const styles = StyleSheet.create({
     detailSubtitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center',
         marginBottom: 10,
         width: Dimensions.get('window').width
@@ -430,17 +417,20 @@ export default class Bulletin extends Page {
 
     /** Opens the upload dialog. */
     openUploadDialog() {
-        Alert.alert(
-            'Upload Bulletin Post',
-            'What kind of bulletin post are you making?',
-            [
-                {text: 'Message', onPress: () => this.setState({ messageOpen: true })},
-                {text: 'Photo/GIF', onPress: () => this.setState({ photoOpen: true })},
-                {text: 'Link', onPress: () => this.setState({ linkOpen: true })},
-                {text: 'Cancel', onPress: () => {}, style: 'cancel'}
-            ],
-            { cancelable: true }
-        );
+        const store = this.props.rStore.getState();
+        if(store.currentUser !== null) {
+            Alert.alert(
+                'Upload Bulletin Post',
+                'What kind of bulletin post are you making?',
+                [
+                    {text: 'Message', onPress: () => this.setState({ messageOpen: true })},
+                    {text: 'Photo/GIF', onPress: () => this.setState({ photoOpen: true })},
+                    {text: 'Link', onPress: () => this.setState({ linkOpen: true })},
+                    {text: 'Cancel', onPress: () => {}, style: 'cancel'}
+                ],
+                { cancelable: true }
+            );
+        }
     }
 
     /** Submits the bulletin post. */
@@ -703,6 +693,11 @@ export default class Bulletin extends Page {
                         // Go to the website
                         if(Linking.canOpenURL(item.content)) {
                             Linking.openURL(item.content);
+                        } else {
+                            Alert.alert('Error', 'There was a problem opening the URL',
+                                [{text:'Close',onPress:()=>{},style:'cancel'}],
+                                { cancelable: true }
+                            );
                         }
                     }} underlayColor='rgba(0,0,0,0)'>
                     <View style={finalStyle}>

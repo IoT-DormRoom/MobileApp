@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
 
@@ -32,12 +31,11 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     button: {
-        top: 50,
         left: Dimensions.get('window').width / 2 - 50,
         width: 100,
         height: 50,
         borderRadius: 20,
-        marginBottom: 10,
+        marginTop: 10,
         alignContent: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)'
@@ -46,7 +44,6 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         fontSize: 18,
-        fontFamily: 'Avenir'
     }
 });
 
@@ -89,16 +86,18 @@ export default class Login extends Page {
                             onChangeText={(text) => this.setState({ passwordFieldText: text }) }
                             placeholder='Password' />
 
-                <TouchableHighlight onPress={this.handleLogin.bind(this)} underlayColor='rgba(0,0,0,0)'>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonTitle}>Login</Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={this.handleSignUp.bind(this)} underlayColor='rgba(0,0,0,0)'>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonTitle}>Sign Up</Text>
-                    </View>
-                </TouchableHighlight>
+                <View style={{marginTop: 35}}>
+                    <TouchableHighlight onPress={this.handleLogin.bind(this)} underlayColor='rgba(0,0,0,0)'>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonTitle}>Login</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={this.handleSignUp.bind(this)} underlayColor='rgba(0,0,0,0)'>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonTitle}>Sign Up</Text>
+                        </View>
+                    </TouchableHighlight>
+                </View>
             </View>
         );
     }
@@ -111,7 +110,7 @@ export default class Login extends Page {
     handleSignUp() {
         this.props.rStore.dispatch({
             type: 'CHANGE_PAGE',
-            index: 7
+            index: 8
         });
     }
 

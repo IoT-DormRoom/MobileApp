@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
 
@@ -34,12 +33,11 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     button: {
-        top: 50,
         left: Dimensions.get('window').width / 2 - 50,
         width: 100,
         height: 50,
         borderRadius: 20,
-        marginBottom: 10,
+        marginTop: 35,
         alignContent: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)'
@@ -48,7 +46,6 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         fontSize: 18,
-        fontFamily: 'Avenir'
     }
 });
 

@@ -18,12 +18,10 @@ const styles = StyleSheet.create({
         opacity:0.35,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
     listView: {
-        top: Dimensions.get('window').height / 22,
-        marginBottom: Dimensions.get('window').height / 22
+        
     },
 
     textInput: {
@@ -31,11 +29,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         height: 50,
         fontSize: 18,
-        fontFamily: 'Avenir',
         width: Dimensions.get('window').width
     },
     addButtonArea: {
-        top: Dimensions.get('window').height / 22,
+        marginTop: Dimensions.get('window').height / 22,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
@@ -45,7 +42,6 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,0.4)',
         fontSize: 20,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     },
 
     cell: {
@@ -60,7 +56,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center'
     }
 });

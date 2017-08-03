@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
         opacity:0.45,
         fontSize:40,
         textAlign:'center',
-        fontFamily:'Avenir',
         fontWeight:'bold'
     },
 
@@ -29,25 +28,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         height: 100,
         fontSize: 18,
-        fontFamily: 'Avenir',
         width: Dimensions.get('window').width
     },
     sendButtonArea: {
-        top: 30,
         width: 100,
         margin: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgb(30, 125, 188)',
         borderRadius: 20,
-        marginBottom: 20,
-        marginTop: 20
+        marginTop: 50
     },
     sendButton: {
         fontSize: 22,
         color: 'rgb(9, 84, 61)',
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         textAlign: 'center'
     },
 
@@ -68,20 +63,17 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: 'white',
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         paddingTop: 10
     },
     cellTime: {
         fontSize: 18,
         color: 'white',
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
     },
     cellContent: {
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-        fontFamily: 'Avenir',
         paddingTop: 10
     }
 });
