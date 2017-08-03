@@ -173,7 +173,6 @@ const selectURI = (uri) => {
     selectedURI = uri;
 };
 
-
 export default class Bulletin extends Page {
 
     /********************
@@ -349,6 +348,10 @@ export default class Bulletin extends Page {
         const store = this.props.rStore.getState();
         var title = this.state.titleText;
 
+        var image = selectedURI;
+        
+        return;
+
         // Message
         if(this.state.messageOpen) {
             var message = this.state.inputText;
@@ -382,29 +385,24 @@ export default class Bulletin extends Page {
         else if(this.state.photoOpen) {
             var url = this.state.linkText;
             var image = selectedURI;
-            var databasePath = firebase.database().ref().child('Bulletin').push();
 
+            var databasePath = firebase.database().ref().child('Bulletin').push();
             if(title != '') {
                 if(image !== null) {
-                    
-                    return;
-
-                    var uploadTask = firebase.storage().ref().child('images').child(databasePath.key).putString(image, 'data_url').then( (snap) => {
-                        // Set the database path.
-                        databasePath.set({
-                            "uploader":store.currentUser.uid,
-                            "content": url,
-                            "type":"photo",
-                            "uploadDate":Date.now(),
-                            "title":title,
-                            "xCoord": this.randomCoordinate().x,
-                            "yCoord": this.randomCoordinate().y,
-                            "rotation":0,
-                            "id":databasePath.key,
-                            "read":false
-                        }).then( () => {
-                            window.location.reload(true);
-                        });
+                    // Set the database path.
+                    databasePath.set({
+                        "uploader":store.currentUser.uid,
+                        "content": image,
+                        "type":"photo",
+                        "uploadDate":Date.now(),
+                        "title":title,
+                        "xCoord": this.randomCoordinate().x,
+                        "yCoord": this.randomCoordinate().y,
+                        "rotation":0,
+                        "id":databasePath.key,
+                        "read":false
+                    }).then( () => {
+                        window.location.reload(true);
                     });
                     return;
 

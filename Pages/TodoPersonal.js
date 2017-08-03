@@ -84,7 +84,7 @@ export default class TodoPersonal extends Page {
         if(currentUser === null) {
             this.props.rStore.dispatch({
                 type: 'CHANGE_PAGE',
-                index: 6
+                index: 7
             });
             return;
         }

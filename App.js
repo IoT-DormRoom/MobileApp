@@ -12,6 +12,7 @@ import TodoPersonal from './Pages/TodoPersonal';
 import Lights from './Pages/Lights';
 import Account from './Pages/Account';
 import Login from './Pages/Login';
+import KeyHanger from './Pages/KeyHanger';
 import SignUp from './Pages/SignUp';
 
 /**
@@ -32,7 +33,7 @@ firebase.initializeApp(config);
 /**
  * REDUX
  */
-var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, <TodoShared/>, <Lights/>, <Account/>, <Login />, <SignUp /> ];
+var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, <TodoShared/>, <Lights/>, <KeyHanger />, <Account/>, <Login />, <SignUp /> ];
 const defaultState = {
 	currentPage: <Bulletin />,
 	drawerOpen: false,
@@ -67,8 +68,9 @@ const sidebar = (state = defaultState, action) => {
 const store = createStore(sidebar);
 pages = [<Bulletin rStore={store} />, <Messaging rStore={store} />, 
 		<TodoPersonal rStore={store} />, <TodoShared rStore={store} />,
-		<Lights rStore={store} />, <Account rStore={store} />, 
-		<Login rStore={store} />, <SignUp rStore={store} /> ];
+		<Lights rStore={store} />, <KeyHanger rStore={store} />, 
+		<Account rStore={store} />, <Login rStore={store} />, 
+		<SignUp rStore={store} /> ];
 
 /**
  * NAVIGATION DRAWER

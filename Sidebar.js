@@ -71,8 +71,13 @@ export default class Sidebar extends React.Component {
                     }} />
                 </View>
                 <View style={styles.menuButton}>
-                    <Button title='Account' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                    <Button title='Key Hanger' color='rgba(0, 0, 0, 0.45)' onPress={() => {
                         this.changePage(5);
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='Account' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage(6);
                     }} />
                 </View>
             </View>
@@ -89,7 +94,7 @@ export default class Sidebar extends React.Component {
             if(this.props.rStore.getState().currentUser === null) {
                 this.props.rStore.dispatch({
                     type: 'CHANGE_PAGE',
-                    index: 6
+                    index: 7
                 });
                 return;
             }
