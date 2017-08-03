@@ -2,7 +2,8 @@ import React from 'react';
 import * as firebase from 'firebase';
 import imagePicker from 'react-native-imagepicker';
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
-        TouchableHighlight, Alert, Modal, TextInput } from 'react-native';
+        TouchableHighlight, Alert, Modal, TextInput, TouchableWithoutFeedback,
+        Linking } from 'react-native';
 
 import Page from './Page';
 
@@ -162,6 +163,42 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'lightcoral',
         marginBottom: 20
+    },
+
+    deleteButton: {
+        width: 200,
+        height: 50,
+        marginTop: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'red'
+    },
+    detailModal: {
+        top: '15%',
+        left: '10%',
+        width: '80%',
+        height: '70%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    detailTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        textAlign: 'center',
+        marginTop: 15,
+        width: Dimensions.get('window').width
+    },
+    detailSubtitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        textAlign: 'center',
+        marginBottom: 10,
+        width: Dimensions.get('window').width
+    },
+    detailContent: {
+        width: Dimensions.get('screen').width
     }
 });
 
@@ -172,6 +209,38 @@ const selectURI = (uri) => {
     styles.selectPhotoBtn['backgroundColor'] = 'lightgreen';
     selectedURI = uri;
 };
+
+
+// DATE FUNCTIONS.
+function dayNumberToString(a) {
+    switch(a) {
+        case 0: return 'Sunday'
+        case 1: return 'Monday'
+        case 2: return 'Tuesday'
+        case 3: return 'Wednesday'
+        case 4: return 'Thursday'
+        case 5: return 'Friday'
+        case 6: return 'Saturday'
+        default: return 'Monday'
+    }
+}
+function monthNumberToString(a) {
+    switch(a) {
+        case 0: return 'January'
+        case 1: return 'February'
+        case 2: return 'March'
+        case 3: return 'April'
+        case 4: return 'May'
+        case 5: return 'June'
+        case 6: return 'July'
+        case 7: return 'August'
+        case 8: return 'September'
+        case 9: return 'October'
+        case 10: return 'November'
+        case 11: return 'December'
+        default: return 'January'
+    }
+}
 
 export default class Bulletin extends Page {
 
@@ -186,6 +255,9 @@ export default class Bulletin extends Page {
             messageOpen: false,
             photoOpen: false,
             linkOpen: false,
+            detailOpen: false,
+
+            detail: null,
             
             titleText: '',
             inputText: '',
@@ -221,7 +293,8 @@ export default class Bulletin extends Page {
 					</View>
 				</TouchableHighlight>
 
-                <FlatList style={styles.list}
+                <FlatList ref={(FlatList) => {this._bulletinList = FlatList}}
+                        style={styles.list}
                         data={this.state.posts} 
                         renderItem={this.bulletinCell}/>
 
@@ -319,6 +392,33 @@ export default class Bulletin extends Page {
                         {this.submitCancelComponent}
                     </View>
                 </Modal>
+
+
+                {/* The detail view dialog. */}
+                <Modal animationType={"fade"} transparent={false} visible={this.state.detailOpen} onRequestClose={() => {}}>
+                    <View style={styles.detailModal}>
+                        <Text style={styles.detailTitle}>{this.state.detail !== null ? this.state.detail.title : 'Title'}</Text>
+                        <Text style={styles.detailSubtitle}>{this.state.detail !== null ? this.state.detail.uploader : 'Uploaded By'}</Text>
+                        <Text style={styles.detailSubtitle}>{this.state.detail !== null ? this.state.detail.uploadDate : 'Upload Date'}</Text>
+
+                        {this.state.detail !== null ? this.getDetailCellContent(this.state.detail) : <View></View>}
+
+                        <TouchableHighlight onPress={() => this.deletePost(this.state.detail)} underlayColor="rgba(0,0,0,0)">
+                            <View style={styles.deleteButton}>
+                                <Text style={styles.button}>
+                                    Delete
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                        <TouchableHighlight onPress={() => this.setState({ detailOpen: false }) } underlayColor="rgba(0,0,0,0)">
+                            <View style={styles.deleteButton}>
+                                <Text style={styles.button}>
+                                    Close
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    </View>
+                </Modal>
             </View>
         );
     }
@@ -350,8 +450,6 @@ export default class Bulletin extends Page {
 
         var image = selectedURI;
         
-        return;
-
         // Message
         if(this.state.messageOpen) {
             var message = this.state.inputText;
@@ -493,9 +591,26 @@ export default class Bulletin extends Page {
 
 
 
+
     /********************
     *      METHODS      *
     *********************/
+
+    /** Handles deleting a bulletin post. */
+    deletePost(item) {
+        Alert.alert('Delete Post', 'Are you sure you want to delete this bulletin post?',
+            [{text: 'Yes', onPress: () => {
+                firebase.database().ref().child('Bulletin').child(item.id).remove();
+                this.setState({
+                    detail: null,
+                    detailOpen: false
+                }, () => this.forceUpdate());
+            }},
+            {text: 'No', onPress: () => {}, style: 'cancel'}],
+            { cancelable: true }
+        );
+    }
+
 
     /** Loads all of the bulletin board posts from the firebase database. */
     loadBulletinPosts() {
@@ -536,10 +651,12 @@ export default class Bulletin extends Page {
     /** What should be rendered in the list view cell for the bulletin page. */
     bulletinCell = ({item}) => {
         return (
-            <View style={styles.cell}>
-                {this.getBulletinCellContent(item)}
-                <Text style={styles.cellTitle}>{item.title.substring(0,25)}</Text>
-            </View>
+            <TouchableWithoutFeedback onPress={() => this.configureDetailView(item)}>
+                <View style={styles.cell}>
+                    {this.getBulletinCellContent(item)}
+                    <Text style={styles.cellTitle}>{item.title.substring(0,25)}</Text>
+                </View>
+            </TouchableWithoutFeedback>
         )
     }
 
@@ -566,6 +683,95 @@ export default class Bulletin extends Page {
             return <Text style={styles.contentText}>{item.content.substring(0,80)}...</Text>
         }
     }
+
+
+    /** Same as above, but for detail. */
+    getDetailCellContent(item) {
+        // Link
+        if(item.type === 'link') {
+            var finalStyle = {
+                width: Dimensions.get('screen').width,
+                marginBottom: 50,
+                marginTop: 50,
+                height: 100,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'lightgray'
+            }
+            return(
+                <TouchableHighlight onPress={() => {
+                        // Go to the website
+                        if(Linking.canOpenURL(item.content)) {
+                            Linking.openURL(item.content);
+                        }
+                    }} underlayColor='rgba(0,0,0,0)'>
+                    <View style={finalStyle}>
+                        <Text style={{textAlign:'center'}}>Click to go to: {'\n'}{item.content}</Text>
+                    </View>
+                </TouchableHighlight>
+            );
+        }
+
+        // Image
+        else if(item.type === 'photo') {
+            return (
+                <View style={styles.detailContent}>
+                    <Image style={styles.contentImage}
+                        source={{uri: item.content}} />
+                </View>
+            );
+        }
+
+        // Message
+        else {
+            return (
+                <View style={styles.detailContent}>
+                    <Text style={styles.contentText}>{item.content}</Text>
+                </View>
+            );
+        }
+    }
+
+
+    /** Configures the detail view. */
+    configureDetailView(item) {
+        var timePostedAgo = new Date( item.uploadDate );
+        var day = timePostedAgo.getDay();
+        var dayString = dayNumberToString(day);
+        var date = timePostedAgo.getDate();
+        var month = timePostedAgo.getMonth();
+        var monthString = monthNumberToString(month);
+        var year = timePostedAgo.getFullYear();
+        var hours = timePostedAgo.getHours() - 12;
+        var minutes = "0" + timePostedAgo.getMinutes();
+        var amOrPm = "";
+        
+        if(timePostedAgo.getHours() > 12) { amOrPm = "pm";} else { amOrPm = "am"; }
+        var formattedTime = dayString + ', ' + monthString + ' ' + date + ', ' + year + ', ' + hours + ':' + minutes.substr(-2) + amOrPm;
+
+
+        firebase.database().ref().child('Users').child(item.uploader).once('value', (snap) => {
+            const a = snap.val().firstName;
+            const b = snap.val().lastName;
+
+            var copy = {
+                key: item.key,
+                content: item.content,
+                title: item.title,
+                xPos: item.xCoord,
+                yPos: item.yCoord,
+                rotation: item.rotation,
+                uploader: a + ' ' + b,
+                type: item.type,
+                id: item.key,
+                read: item.read,
+                uploadDate: formattedTime
+            }
+
+            this.setState({ detail: copy, detailOpen: true });
+        })
+    }
+
 
 
     /** Returns a random coordinate to place a bulletin post. */
