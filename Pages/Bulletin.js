@@ -6,10 +6,10 @@ import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         Linking, Platform } from 'react-native';
 
 import RNFetchBlob from 'react-native-fetch-blob';
-const Blob = RNFetchBlob.polyfill.Blob
-const fs = RNFetchBlob.fs
-window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-window.Blob = Blob
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
 
 import Page from './Page';
 
@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
 
 /** Helper method for selecting the uri from the image picker. */
 var imageURI = null;
-
 const uploadImage = (uri, key, mime = 'application/octet-stream') => {
     return new Promise((resolve, reject) => {
       const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
