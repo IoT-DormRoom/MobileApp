@@ -1,6 +1,6 @@
 import React from 'react';
 import * as firebase from 'firebase';
-import imagePicker from 'react-native-imagepicker';
+//import imagePicker from 'react-native-imagepicker';
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput } from 'react-native';
 

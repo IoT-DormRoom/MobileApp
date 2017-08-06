@@ -1,6 +1,6 @@
 import React from 'react';
 import * as firebase from 'firebase';
-import imagePicker from 'react-native-imagepicker';
+import imagePicker from 'react-native-image-picker';
 import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput, TouchableWithoutFeedback,
         Linking, Platform } from 'react-native';
@@ -197,13 +197,7 @@ const styles = StyleSheet.create({
 
 
 /** Helper method for selecting the uri from the image picker. */
-var selectedURI = null;
-var base64 = '';
-
-const selectURI = (uri) => {
-    styles.selectPhotoBtn['backgroundColor'] = 'lightgreen';
-    selectedURI = uri;
-};
+var imageURI = null;
 
 const uploadImage = (uri, key, mime = 'application/octet-stream') => {
     return new Promise((resolve, reject) => {
@@ -474,7 +468,6 @@ export default class Bulletin extends Page {
     submitBulletinPost() {
         const store = this.props.rStore.getState();
         var title = this.state.titleText;
-        var image = selectedURI;
         
         // Message
         if(this.state.messageOpen) {
@@ -511,36 +504,27 @@ export default class Bulletin extends Page {
             
             var databasePath = firebase.database().ref().child('Bulletin').push();
             if(title != '') {
-                if(image !== null) {
-                    //var decoded = btoa(image);
-                    //console.log(decoded);
-                    //var base64AsString = 'data:image/jpeg;base64,' + decoded;
-                    //console.log(base64AsString);
-                    
-                    
-                    uploadImage(image, databasePath.key)
-                        .then(url => { console.log(url); })
-                        .catch(error => console.log(error));
-                    
-                    // firebase.storage().ref().child('images/' + databasePath.key).put(f).then( (snap) => {
-                    //     // Set the database path.
-                    //     databasePath.set({
-                    //         "uploader":store.currentUser.uid,
-                    //         "content": snap.downloadURL,
-                    //         "type":"photo",
-                    //         "uploadDate":Date.now(),
-                    //         "title":title,
-                    //         "xCoord": this.randomCoordinate().x,
-                    //         "yCoord": this.randomCoordinate().y,
-                    //         "rotation":0,
-                    //         "id":databasePath.key,
-                    //         "read":false
-                    //     }).then( () => {
+                if(imageURI !== null) {
+                    // Upload image to firebase storage.
+                    uploadImage(imageURI, databasePath.key).then(url => { 
+                        
+                        // Set the database path.
+                        databasePath.set({
+                            "uploader":store.currentUser.uid,
+                            "content": url,
+                            "type":"photo",
+                            "uploadDate":Date.now(),
+                            "title":title,
+                            "xCoord": this.randomCoordinate().x,
+                            "yCoord": this.randomCoordinate().y,
+                            "rotation":0,
+                            "id":databasePath.key,
+                            "read":false
+                        }).then( () => {
                             
-                    //     });
-                    // }).catch( (err) => {
-                    //     console.log(err);
-                    // })
+                        });
+
+                    }).catch(error => console.log(error));
 
                 } else {
                     // Set the database path.
@@ -558,7 +542,6 @@ export default class Bulletin extends Page {
                     }).then( () => {
                         
                     });
-                    return;
                 }
             }
             // Otherwise, show error alert.
@@ -599,32 +582,67 @@ export default class Bulletin extends Page {
             }
         }
 
+        imageURI = null;
         this.setState({ messageOpen: false, photoOpen: false, linkOpen: false });
     }
 
 
     /** Shows the image picker. */
     openImagePicker() {
-        imagePicker.open({
-            takePhoto: false,
-            useLastPhoto: false,
-            chooseFromLibrary: true
-        }).then( ({ uri, width, height }) => {
-            
-            Alert.alert('Image Select Success', 'Image has been selected successfully.',
-                [{text:'Ok', onPress: () => {}, style:'cancel'}],
-                { cancelable: true }
-            );
-            selectURI(uri);
-            return;
+        var options = {
+            title: 'Select Image',
+            customButtons: [],
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+        imagePicker.showImagePicker(options, (response) => {
+            //console.log('Response = ', response);
 
-        }, (error) => {
-            Alert.alert('Image Select Error', 'There was an issue picking your image.',
-                [{text: 'Close', onPress: () => {}, style:'cancel'}],
-                { cancelable: true }
-            );
-            return;
+            if (response.didCancel) {
+                //console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                //console.log('ImagePicker Error: ', response.error);
+                Alert.alert('Image Select Error', 'ERROR: ' + response.error,
+                    [{text: 'Close', onPress: () => {}, style:'cancel'}],
+                    { cancelable: true }
+                );
+                return;
+            }
+            else if (response.customButton) {
+                //console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                Alert.alert('Image Select Success', 'Image has been selected successfully.',
+                    [{text:'Ok', onPress: () => {}, style:'cancel'}],
+                    { cancelable: true }
+                );
+                imageURI = response.uri;
+                return;
+            }
         });
+        // imagePicker.open({
+        //     takePhoto: false,
+        //     useLastPhoto: false,
+        //     chooseFromLibrary: true
+        // }).then( ({ uri, width, height }) => {
+            
+        //     Alert.alert('Image Select Success', 'Image has been selected successfully.',
+        //         [{text:'Ok', onPress: () => {}, style:'cancel'}],
+        //         { cancelable: true }
+        //     );
+        //     selectURI(uri);
+        //     return;
+
+        // }, (error) => {
+        //     Alert.alert('Image Select Error', 'There was an issue picking your image.',
+        //         [{text: 'Close', onPress: () => {}, style:'cancel'}],
+        //         { cancelable: true }
+        //     );
+        //     return;
+        // });
     }
 
 
