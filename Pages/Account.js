@@ -171,9 +171,7 @@ export default class Account extends Page {
 
     handleLogout() {
         firebase.auth().signOut();
-        this.props.rStore.dispatch({
-            type: 'LOGOUT'
-        });
+        this.props.rStore.dispatch({ type: 'LOGOUT' });
     }
 
 

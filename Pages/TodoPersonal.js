@@ -77,10 +77,7 @@ export default class TodoPersonal extends Page {
     componentDidMount() {
         const currentUser = this.props.rStore.getState().currentUser;
         if(currentUser === null) {
-            this.props.rStore.dispatch({
-                type: 'CHANGE_PAGE',
-                index: 7
-            });
+            this.props.rStore.dispatch({type: 'LOGINPAGE'});
             return;
         }
 

@@ -109,8 +109,7 @@ export default class Login extends Page {
 
     handleSignUp() {
         this.props.rStore.dispatch({
-            type: 'CHANGE_PAGE',
-            index: 8
+            type: 'SIGNUP'
         });
     }
 

@@ -5,6 +5,12 @@ import { Dimensions, StyleSheet, View, Text, Button, Image, FlatList, WebView,
         TouchableHighlight, Alert, Modal, TextInput, TouchableWithoutFeedback,
         Linking, Platform } from 'react-native';
 
+import RNFetchBlob from 'react-native-fetch-blob';
+const Blob = RNFetchBlob.polyfill.Blob
+const fs = RNFetchBlob.fs
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob
+
 import Page from './Page';
 
 //STYLES
@@ -192,10 +198,41 @@ const styles = StyleSheet.create({
 
 /** Helper method for selecting the uri from the image picker. */
 var selectedURI = null;
+var base64 = '';
+
 const selectURI = (uri) => {
     styles.selectPhotoBtn['backgroundColor'] = 'lightgreen';
     selectedURI = uri;
 };
+
+const uploadImage = (uri, key, mime = 'application/octet-stream') => {
+    return new Promise((resolve, reject) => {
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      let uploadBlob = null
+
+      const imageRef = firebase.storage().ref('images').child(key)
+
+      fs.readFile(uploadUri, 'base64')
+        .then((data) => {
+          return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+          uploadBlob = blob
+          return imageRef.put(blob, { contentType: mime })
+        })
+        .then(() => {
+          uploadBlob.close()
+          return imageRef.getDownloadURL()
+        })
+        .then((url) => {
+          resolve(url)
+        })
+        .catch((error) => {
+          reject(error)
+      })
+    })
+}
+
 
 
 // DATE FUNCTIONS.
@@ -437,7 +474,6 @@ export default class Bulletin extends Page {
     submitBulletinPost() {
         const store = this.props.rStore.getState();
         var title = this.state.titleText;
-
         var image = selectedURI;
         
         // Message
@@ -472,27 +508,39 @@ export default class Bulletin extends Page {
         // Photo
         else if(this.state.photoOpen) {
             var url = this.state.linkText;
-            var image = selectedURI;
-
+            
             var databasePath = firebase.database().ref().child('Bulletin').push();
             if(title != '') {
                 if(image !== null) {
-                    // Set the database path.
-                    databasePath.set({
-                        "uploader":store.currentUser.uid,
-                        "content": image,
-                        "type":"photo",
-                        "uploadDate":Date.now(),
-                        "title":title,
-                        "xCoord": this.randomCoordinate().x,
-                        "yCoord": this.randomCoordinate().y,
-                        "rotation":0,
-                        "id":databasePath.key,
-                        "read":false
-                    }).then( () => {
-                        window.location.reload(true);
-                    });
-                    return;
+                    //var decoded = btoa(image);
+                    //console.log(decoded);
+                    //var base64AsString = 'data:image/jpeg;base64,' + decoded;
+                    //console.log(base64AsString);
+                    
+                    
+                    uploadImage(image, databasePath.key)
+                        .then(url => { console.log(url); })
+                        .catch(error => console.log(error));
+                    
+                    // firebase.storage().ref().child('images/' + databasePath.key).put(f).then( (snap) => {
+                    //     // Set the database path.
+                    //     databasePath.set({
+                    //         "uploader":store.currentUser.uid,
+                    //         "content": snap.downloadURL,
+                    //         "type":"photo",
+                    //         "uploadDate":Date.now(),
+                    //         "title":title,
+                    //         "xCoord": this.randomCoordinate().x,
+                    //         "yCoord": this.randomCoordinate().y,
+                    //         "rotation":0,
+                    //         "id":databasePath.key,
+                    //         "read":false
+                    //     }).then( () => {
+                            
+                    //     });
+                    // }).catch( (err) => {
+                    //     console.log(err);
+                    // })
 
                 } else {
                     // Set the database path.
@@ -508,7 +556,7 @@ export default class Bulletin extends Page {
                         "id":databasePath.key,
                         "read":false
                     }).then( () => {
-                        window.location.reload(true);
+                        
                     });
                     return;
                 }

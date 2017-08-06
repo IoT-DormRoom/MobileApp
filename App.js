@@ -12,6 +12,7 @@ import TodoPersonal from './Pages/TodoPersonal';
 import Lights from './Pages/Lights';
 import Account from './Pages/Account';
 import Login from './Pages/Login';
+import Recipies from './Pages/Recipies';
 import KeyHanger from './Pages/KeyHanger';
 import SignUp from './Pages/SignUp';
 
@@ -33,7 +34,9 @@ firebase.initializeApp(config);
 /**
  * REDUX
  */
-var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, <TodoShared/>, <Lights/>, <KeyHanger />, <Account/>, <Login />, <SignUp /> ];
+var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, 
+			<TodoShared/>, <Lights/>, <Recipies />, <KeyHanger />, 
+			<Account/>, <Login />, <SignUp /> ];
 const defaultState = {
 	currentPage: <Bulletin />,
 	drawerOpen: false,
@@ -41,8 +44,44 @@ const defaultState = {
 }
 const sidebar = (state = defaultState, action) => {
     switch (action.type) {
-        case 'CHANGE_PAGE':
-			state.currentPage = pages[action.index];
+        case 'BULLETIN':
+			state.currentPage = pages[0];
+			state.drawerOpen = false;
+			break;
+		case 'MESSAGING':
+			state.currentPage = pages[1];
+			state.drawerOpen = false;
+			break;
+		case 'TODO_PERSONAL':
+			state.currentPage = pages[2];
+			state.drawerOpen = false;
+			break;
+		case 'TODO_SHARED':
+			state.currentPage = pages[3];
+			state.drawerOpen = false;
+			break;
+		case 'LIGHTS':
+			state.currentPage = pages[4];
+			state.drawerOpen = false;
+			break;
+		case 'RECIPIES':
+			state.currentPage = pages[5];
+			state.drawerOpen = false;
+			break;
+		case 'KEYHANGER':
+			state.currentPage = pages[6];
+			state.drawerOpen = false;
+			break;
+		case 'ACCOUNT':
+			state.currentPage = pages[7];
+			state.drawerOpen = false;
+			break;
+		case 'LOGINPAGE':
+			state.currentPage = pages[8];
+			state.drawerOpen = false;
+			break;
+		case 'SIGNUP':
+			state.currentPage = pages[9];
 			state.drawerOpen = false;
 			break;
 		case 'OPEN_SIDEBAR':
@@ -53,13 +92,12 @@ const sidebar = (state = defaultState, action) => {
 			break;
 		case 'LOGIN':
 			state.currentUser = action.currentUser;
-			state.currentPage = pages[6];
+			state.currentPage = pages[7];
 			break;
 		case 'LOGOUT':
 			state.currentUser = null;
-			state.currentPage = pages[7];
+			state.currentPage = pages[8];
 			break;
-
         default: break;
     }
 
@@ -69,9 +107,9 @@ const store = createStore(sidebar);
 defaultState.currentPage = <Bulletin rStore={store} />
 pages = [<Bulletin rStore={store} />, <Messaging rStore={store} />, 
 		<TodoPersonal rStore={store} />, <TodoShared rStore={store} />,
-		<Lights rStore={store} />, <KeyHanger rStore={store} />, 
-		<Account rStore={store} />, <Login rStore={store} />, 
-		<SignUp rStore={store} /> ];
+		<Lights rStore={store} />,  <Recipies rStore={store}/>,
+		<KeyHanger rStore={store} />, <Account rStore={store} />, 
+		<Login rStore={store} />, <SignUp rStore={store} /> ];
 
 /**
  * NAVIGATION DRAWER
@@ -122,8 +160,7 @@ export default class App extends React.Component {
 		super();
 		this.handleAutoLogin(() => {
 			store.dispatch({
-				type: 'CHANGE_PAGE',
-				index: 0
+				type: 'BULLETIN'
 			});
 		});
 	}

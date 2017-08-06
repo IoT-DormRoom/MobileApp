@@ -79,8 +79,7 @@ export default class TodoShared extends Page {
         const currentUser = this.props.rStore.getState().currentUser;
         if(currentUser === null) {
             this.props.rStore.dispatch({
-                type: 'CHANGE_PAGE',
-                index: 7
+                type: 'LOGINPAGE'
             });
             return;
         }

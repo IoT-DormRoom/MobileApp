@@ -46,37 +46,42 @@ export default class Sidebar extends React.Component {
                 
                 <View style={styles.menuButton}>
                     <Button title='Bulletin' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(0);    
+                        this.changePage('BULLETIN');    
                     }} />
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='Messaging' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(1);
+                        this.changePage('MESSAGING');
                     }}/>
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='To-Do (Personal)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(2);
+                        this.changePage('TODO_PERSONAL');
                     }} />
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='To-Do (Shared)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(3);
+                        this.changePage('TODO_SHARED');
                     }} />
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='Lights' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(4);
+                        this.changePage('LIGHTS');
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
+                    <Button title='Recipies' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage('RECIPIES');
                     }} />
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='Key Hanger' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(5);
+                        this.changePage('KEYHANGER');
                     }} />
                 </View>
                 <View style={styles.menuButton}>
                     <Button title='Account' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage(6);
+                        this.changePage('ACCOUNT');
                     }} />
                 </View>
             </View>
@@ -89,18 +94,17 @@ export default class Sidebar extends React.Component {
     *********************/
 
     changePage(i) {
-        if(i === 6) {
+        if(i === 'ACCOUNT') {
             if(this.props.rStore.getState().currentUser === null) {
-                this.props.rStore.dispatch({
-                    type: 'CHANGE_PAGE',
-                    index: 7
-                });
+                this.props.rStore.dispatch({ type: 'LOGINPAGE' });
+                return;
+            } else {
+                this.props.rStore.dispatch({ type: 'ACCOUNT' });
                 return;
             }
         }
         this.props.rStore.dispatch({
-            type: 'CHANGE_PAGE',
-            index: i
+            type: i
         });
     }
 
