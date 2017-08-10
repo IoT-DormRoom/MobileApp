@@ -265,15 +265,21 @@ export default class Refrigerator extends Page {
 
     /** Handles deleting a food item from the database. */
     deleteFood() {
-        FoodRecipe.deleteFood(this.state.idText);
-        this.setState({
-            openDetailDialog: false,
-            nameText: '',
-            quantityText: '',
-            categoryText: '',
-            typeText: '',
-            idText: ''
-        });
+        Alert.alert('Delete', 'Are you sure you want to delete this ' + this.state.nameText + ' from the refrigerator?',
+            [{text:'Yes', onPress: () => { 
+                FoodRecipe.deleteFood(this.state.idText);
+                this.setState({
+                    openDetailDialog: false,
+                    nameText: '',
+                    quantityText: '',
+                    categoryText: '',
+                    typeText: '',
+                    idText: ''
+                });
+             }},
+            {text: 'No', onPress: () => {}, style:'cancel'}],
+            {cancelable:true}
+        );
     }
 
 
@@ -305,7 +311,7 @@ export default class Refrigerator extends Page {
                     <Text style={styles.cellText}>Type: {item.type}</Text>
                 </View>
             </TouchableWithoutFeedback>
-        )
+        );
     }
     
 }
