@@ -12,7 +12,8 @@ import TodoPersonal from './Pages/TodoPersonal';
 import Lights from './Pages/Lights';
 import Account from './Pages/Account';
 import Login from './Pages/Login';
-import Recipies from './Pages/Recipies';
+import Refrigerator from './Pages/Refrigerator';
+import Recipes from './Pages/Recipes';
 import KeyHanger from './Pages/KeyHanger';
 import SignUp from './Pages/SignUp';
 
@@ -35,8 +36,8 @@ firebase.initializeApp(config);
  * REDUX
  */
 var pages = [<Bulletin />, <Messaging />, <TodoPersonal/>, 
-			<TodoShared/>, <Lights/>, <Recipies />, <KeyHanger />, 
-			<Account/>, <Login />, <SignUp /> ];
+			<TodoShared/>, <Lights/>, <Refrigerator />, <Recipes />, 
+			<KeyHanger />, <Account/>, <Login />, <SignUp /> ];
 const defaultState = {
 	currentPage: <Bulletin />,
 	drawerOpen: false,
@@ -64,24 +65,28 @@ const sidebar = (state = defaultState, action) => {
 			state.currentPage = pages[4];
 			state.drawerOpen = false;
 			break;
-		case 'RECIPIES':
+		case 'REFRIGERATOR':
 			state.currentPage = pages[5];
 			state.drawerOpen = false;
 			break;
-		case 'KEYHANGER':
+		case 'RECIPES':
 			state.currentPage = pages[6];
 			state.drawerOpen = false;
 			break;
-		case 'ACCOUNT':
+		case 'KEYHANGER':
 			state.currentPage = pages[7];
 			state.drawerOpen = false;
 			break;
-		case 'LOGINPAGE':
+		case 'ACCOUNT':
 			state.currentPage = pages[8];
 			state.drawerOpen = false;
 			break;
-		case 'SIGNUP':
+		case 'LOGINPAGE':
 			state.currentPage = pages[9];
+			state.drawerOpen = false;
+			break;
+		case 'SIGNUP':
+			state.currentPage = pages[10];
 			state.drawerOpen = false;
 			break;
 		case 'OPEN_SIDEBAR':
@@ -107,9 +112,10 @@ const store = createStore(sidebar);
 defaultState.currentPage = <Bulletin rStore={store} />
 pages = [<Bulletin rStore={store} />, <Messaging rStore={store} />, 
 		<TodoPersonal rStore={store} />, <TodoShared rStore={store} />,
-		<Lights rStore={store} />,  <Recipies rStore={store}/>,
-		<KeyHanger rStore={store} />, <Account rStore={store} />, 
-		<Login rStore={store} />, <SignUp rStore={store} /> ];
+		<Lights rStore={store} />, <Refrigerator rStore={store}/>,
+		<Recipes rStore={store}/>, <KeyHanger rStore={store} />, 
+		<Account rStore={store} />, <Login rStore={store} />, 
+		<SignUp rStore={store} /> ];
 
 /**
  * NAVIGATION DRAWER

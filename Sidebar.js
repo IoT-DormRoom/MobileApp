@@ -70,6 +70,11 @@ export default class Sidebar extends React.Component {
                     }} />
                 </View>
                 <View style={styles.menuButton}>
+                    <Button title='Refrigerator' color='rgba(0, 0, 0, 0.45)' onPress={() => {
+                        this.changePage('REFRIGERATOR');
+                    }} />
+                </View>
+                <View style={styles.menuButton}>
                     <Button title='Recipies' color='rgba(0, 0, 0, 0.45)' onPress={() => {
                         this.changePage('RECIPIES');
                     }} />
