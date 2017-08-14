@@ -208,7 +208,7 @@ module.exports.loadAllRecipes = function(success, failure) {
                 for(var ingID in ingredients) {
                     var obj = {
                         key: ingID,
-                        foodName: ingredients[ingID].foodId,
+                        foodName: ingredients[ingID].foodName,
                         foodId: ingredients[ingID].foodId,
                         quantity: ingredients[ingID].quantity
                     }
@@ -245,12 +245,62 @@ module.exports.loadSingleRecipe = function(id, success, failure) {
 
         // Load the food item.
         var json = JSON.parse(resp.text);
+        var ingredients = json[id].ingredients;
+        var modelIngredients = [];
+        for(var ingID in ingredients) {
+            var obj = {
+                key: ingID,
+                foodName: ingredients[ingID].foodName,
+                foodId: ingredients[ingID].foodId,
+                quantity: ingredients[ingID].quantity
+            }
+            modelIngredients.push(obj);
+        }
         var model = {
             id: id,
             name: json.name,
-            ingredients: json.ingredients
+            ingredients: modelIngredients
         }
         success(model);
+    });
+}
+
+
+
+/** Uploads a recipe to the database.
+*   @param {String} name The name of the recipe.
+*   @param {Array} ingredients An array of objects representing the ingredients of this recipe.
+*   @param {Function} success The block to run when the recipe is successfully uploaded.
+*   @param {Function} failure A callback for when there is an error creating the recipe.
+*/
+module.exports.uploadRecipe = function(name = '', ingredients = [], success, failure) {
+    if(name === '') { failure('Invalid name for recipe.'); return; }
+
+    superagent.post('https://dorm-service-server.herokuapp.com/recipe/')
+    .send({
+        "name": name,
+        "ingredients": ingredients
+    })
+    .set('Accept', 'application/json')
+    .set('contentType', 'application/json')
+    .set('dataType', 'json')
+    .end((err, resp) => {
+        console.log(resp);
+        console.log(err);
+        if(err) {
+            Alert.alert('Upload', err,
+                [{text:'Ok',onPress: () => {}, style: 'cancel'}],
+                {cancelable:true}
+            );
+            failure('Error uploading recipe.');
+            return;
+        } else {
+            Alert.alert('Upload', 'Upload Successful!',
+                [{text:'Ok',onPress: () => {}, style: 'cancel'}],
+                {cancelable:true}
+            );
+            success();
+        }
     });
 }
 
@@ -261,7 +311,7 @@ module.exports.loadSingleRecipe = function(id, success, failure) {
 *   @param {String} id The id of the recipe to be updated.
 */
 module.exports.updateRecipe = function(id) {
-
+    // Implement this.
 }
 
 
@@ -306,7 +356,6 @@ module.exports.canMakeRecipe = function(id, completion) {
         }
 
         const result = JSON.parse(resp.text);
-
         if(result['status'] === false) { completion(false); }
         else { completion(true); }
     });
