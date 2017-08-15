@@ -251,15 +251,37 @@ export default class Refrigerator extends Page {
     updateFood() {
         var quant = parseInt(this.state.quantityText.trim());
 
-        FoodRecipe.updateFood(this.state.idText, quant);
-        this.setState({
-            openDetailDialog: false,
-            nameText: '',
-            quantityText: '',
-            categoryText: '',
-            typeText: '',
-            idText: ''
+        FoodRecipe.updateFood(this.state.idText, {
+            name: this.state.nameText,
+            quantity: quant,
+            category: this.state.categoryText,
+            type: this.state.typeText
         });
+
+        FoodRecipe.loadAllRecipes((arr) => {
+            for(var i = 0; i < arr.length; i++) {
+                for(var j = 0; j < arr[i].ingredients.length; j++) {
+                    if(arr[i].ingredients[j].foodId === this.state.idText) {
+                        arr[i].ingredients[j] = {
+                            foodId: arr[i].ingredients[j].foodId,
+                            foodName: arr[i].ingredients[j].foodName,
+                            quantity: quant
+                        };
+                        FoodRecipe.updateRecipe(arr[i].key, arr[i].ingredients);
+                    }
+                }
+            }
+
+            this.setState({
+                nameText: '',
+                quantityText: '',
+                categoryText: '',
+                typeText: '',
+                idText: ''
+            });
+        }, (err) => {});
+
+        this.setState({ openDetailDialog: false });
     }
 
 

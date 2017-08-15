@@ -106,7 +106,6 @@ export default class Recipes extends Page {
     * in the refrigerator. */
     loadRecipes() {
         FoodRecipe.loadAllRecipes((arr) => {
-
             this.setState({ recipes: [] }, () => {
                 var loaded = this.state.recipes.concat(arr);
                 loaded.sort( (a, b) => { return b.ingredients.length - a.ingredients.length });
@@ -186,7 +185,7 @@ export default class Recipes extends Page {
     recipeCellComponent = ({item}) => {
         var ingredientsString = "";
         for(var i = 0; i < item.ingredients.length; i++) {
-            ingredientsString += "Name: " + item.ingredients[i].foodName + ", Current Quantity: " + item.ingredients[i].quantity + "\n";
+            ingredientsString += "Name: " + item.ingredients[i].foodName + ", Quantity: " + item.ingredients[i].quantity + "\n";
         }
 
         return (
@@ -200,9 +199,8 @@ export default class Recipes extends Page {
                                 );
                             })
                         }},
-                        {text:'Delete',onPress:() => {
-                            FoodRecipe.deleteRecipe(item.key);
-                        }, style:'cancel'}],
+                        {text:'Delete',onPress:() => {FoodRecipe.deleteRecipe(item.key);}},
+                        {text:'Cancel',onPress:()=>{},style:'cancel'}],
                         {cancelable:true}
                     );
                 }}>

@@ -108,14 +108,14 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightblue'
+        backgroundColor: 'rgb(214, 182, 237)'
     },
     cancelButtonArea: {
         width: 200,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red'
+        backgroundColor: 'rgb(214, 182, 237)'
     },
     button: {
         fontSize: 20,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red'
+        backgroundColor: 'rgb(214, 182, 237)'
     },
     detailModal: {
         top: '15%',

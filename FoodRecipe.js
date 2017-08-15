@@ -125,10 +125,13 @@ module.exports.loadSingleFood = function(id, success, failure) {
 *   @param {String} id The id of the food item you are looking for.
 *   @param {Number} quantity The quantity of the food item.
 */
-module.exports.updateFood = function(id, quantity) {
-    superagent.post('https://dorm-service-server.herokuapp.com/food/' + id)
+module.exports.updateFood = function(id, { name = '', quantity = 0, category, type }) {
+    superagent.put('https://dorm-service-server.herokuapp.com/food/' + id)
     .send({
-        "quantity": quantity
+        "name":name,
+        "quantity": quantity,
+        "category":category,
+        "type":type
     })
     .set('Accept', 'application/json')
     .set('contentType', 'application/json')
@@ -309,9 +312,29 @@ module.exports.uploadRecipe = function(name = '', ingredients = [], success, fai
 
 /** Updates a recipe in the database. 
 *   @param {String} id The id of the recipe to be updated.
+*   @param {Number} newIngredients The new ingredients.
 */
-module.exports.updateRecipe = function(id) {
-    // Implement this.
+module.exports.updateRecipe = function(id, newIngredients) {
+    superagent.put('https://dorm-service-server.herokuapp.com/recipe/' + id)
+    .send({
+        "ingredients": newIngredients
+    })
+    .set('Accept', 'application/json')
+    .set('contentType', 'application/json')
+    .set('dataType', 'json')
+    .end((err, resp) => {
+        if(err) {
+            Alert.alert('Update', err,
+                [{text:'Ok',onPress: () => {}, style: 'cancel'}],
+                {cancelable:true}
+            );
+        } else {
+            Alert.alert('Update', 'Update Successful!',
+                [{text:'Ok',onPress: () => {}, style: 'cancel'}],
+                {cancelable:true}
+            );
+        }
+    });
 }
 
 
