@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, View, Text, Button } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, Button, TouchableHighlight } from 'react-native';
 
 import Bulletin from './Pages/Bulletin';
 import Messaging from './Pages/Messaging';
@@ -15,13 +15,23 @@ const styles = StyleSheet.create({
     menuButton: {
         height: 50,
         position: 'relative',
+        justifyContent: 'center',
+        alignContent: 'center',
         width: Dimensions.get('window').width,
         backgroundColor: 'rgb(98, 196, 143)'
+    },
+    menuButtonTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        color: 'rgba(0,0,0,0.5)',
+        textAlign: 'center'
     },
     title: {
         fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center',
+        lineHeight: 50,
         color: 'rgba(0, 0, 0, 0.45)'
     }
 });
@@ -44,51 +54,51 @@ export default class Sidebar extends React.Component {
             <View style={styles.sidebar}>
                 <Text style={styles.title}>Dashboard</Text>
                 
-                <View style={styles.menuButton}>
-                    <Button title='Bulletin' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('BULLETIN');    
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Messaging' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('MESSAGING');
-                    }}/>
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='To-Do (Personal)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('TODO_PERSONAL');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='To-Do (Shared)' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('TODO_SHARED');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Lights' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('LIGHTS');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Refrigerator' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('REFRIGERATOR');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Recipes' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('RECIPES');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Key Hanger' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('KEYHANGER');
-                    }} />
-                </View>
-                <View style={styles.menuButton}>
-                    <Button title='Account' color='rgba(0, 0, 0, 0.45)' onPress={() => {
-                        this.changePage('ACCOUNT');
-                    }} />
-                </View>
+                <TouchableHighlight onPress={() => {this.changePage('BULLETIN')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Bulletin</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('MESSAGING')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Messaging</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('TODO_PERSONAL')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>To-Do (Personal)</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('TODO_SHARED')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>To-Do (Shared)</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('LIGHTS')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Lights</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('REFRIGERATOR')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Refrigerator</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('RECIPES')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Recipes</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('KEYHANGER')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Key Hanger</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => {this.changePage('ACCOUNT')}}>
+                    <View style={styles.menuButton}>
+                        <Text style={styles.menuButtonTitle}>Account</Text>
+                    </View>
+                </TouchableHighlight>
             </View>
         );
     }
