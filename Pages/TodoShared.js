@@ -25,14 +25,14 @@ const styles = StyleSheet.create({
     },
 
     textInput: {
-        top: 30,
+        marginTop: 30,
         backgroundColor: 'white',
         height: 50,
         fontSize: 18,
         width: Dimensions.get('window').width
     },
     addButtonArea: {
-        marginTop: Dimensions.get('window').height / 22,
+        //marginTop: Dimensions.get('window').height / 22,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
@@ -163,7 +163,7 @@ export default class TodoShared extends Page {
     /** Handles the real completion process. */
     handleComplete(item) {
         firebase.database().ref().child('TodoShared').child(item.id).remove();
-        this.setState({ todos: newTodos }, () => this.forceUpdate());
+        this.forceUpdate();
     }
 
 
